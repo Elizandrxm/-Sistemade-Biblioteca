@@ -121,12 +121,57 @@ public class Arvore_livros {
     }
 
     private No encontrarMenor(No atual) {
-        // Aguardando implementação da equipe
-        return null;
+        while (atual.esq != null) {
+            atual = atual.esq;
+        }
+        return atual;
     }
 
     private No encontrarMaior(No atual) {
-        // Aguardando implementação da equipe
-        return null;
+        while (atual.dir != null) {
+            atual = atual.dir;
+        }
+        return atual;
     }
+
+    public void removerLivro(int id) {
+        this.raiz = removerRecursivo(this.raiz, id);
+    }
+
+    private No removerRecursivo(No noAtual, int id) {
+        if (noAtual == null) {
+            System.out.println("Livro nao encontrado.");
+            return null;
+        }
+
+        if (id < noAtual.livro.id) {
+            noAtual.esq = removerRecursivo(noAtual.esq, id);
+            return noAtual;
+        }
+
+        if (id > noAtual.livro.id) {
+            noAtual.dir = removerRecursivo(noAtual.dir, id);
+            return noAtual;
+        }
+
+        if (noAtual.esq == null && noAtual.dir == null) {
+            return null;
+        }
+
+        if (noAtual.esq == null) {
+            return noAtual.dir;
+        }
+
+        if (noAtual.dir == null) {
+            return noAtual.esq;
+        }
+
+        No sucessor = encontrarMenor(noAtual.dir);
+        assert sucessor != null;
+        noAtual.livro = sucessor.livro;
+        noAtual.dir = removerRecursivo(noAtual.dir, sucessor.livro.id);
+
+        return noAtual;
+    }
+
 }
