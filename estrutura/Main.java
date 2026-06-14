@@ -1,6 +1,10 @@
 package estrutura;
 
-   public static void main(String[] args) {
+import java.util.Scanner;
+
+public class Main {
+
+    public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         Arvore_livros biblioteca = new Arvore_livros();
         int opcao;
@@ -138,3 +142,4 @@ package estrutura;
             System.out.println("\n✗ Livro com ISBN " + isbn + " não encontrado na biblioteca.");
         }
     }
+}
