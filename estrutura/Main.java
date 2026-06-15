@@ -10,18 +10,11 @@ public class Main {
         int opcao;
 
         System.out.println("=== SISTEMA DE GERENCIAMENTO DE BIBLIOTECA ===");
-
+        biblioteca.popularBiblioteca(biblioteca);
         do {
+
             exibirMenu();
-            System.out.print("Digite sua opção: ");
-            
-            while (!scanner.hasNextInt()) {
-                System.out.println("Por favor, digite um número válido!");
-                System.out.print("Digite sua opção: ");
-                scanner.next();
-            }
-            opcao = scanner.nextInt();
-            scanner.nextLine();
+            opcao = lerInteiro(scanner, "Digite sua opção: ");
 
             switch (opcao) {
                 case 1:
@@ -60,17 +53,17 @@ public class Main {
                 default:
                     System.out.println("\nOpção inválida! Por favor, digite um número entre 1 e 11.");
             }
-            
+
             if (opcao != 11) {
                 System.out.println("\n" + "=".repeat(50));
             }
-            
+
         } while (opcao != 11);
-        
+
         scanner.close();
     }
-    
-      private static void exibirMenu() {
+
+    private static void exibirMenu() {
         System.out.println("\n" + "=".repeat(50));
         System.out.println("MENU PRINCIPAL");
         System.out.println("=".repeat(50));
@@ -87,59 +80,92 @@ public class Main {
         System.out.println("11 - Encerrar sistema");
         System.out.println("=".repeat(50));
     }
-    
+
     private static void cadastrarLivro(Scanner scanner, Arvore_livros biblioteca) {
         System.out.println("\n--- CADASTRO DE LIVRO ---");
-        
-        System.out.print("Digite o ISBN do livro: ");
-        int isbn = scanner.nextInt();
-        scanner.nextLine();
-        
+
+        long isbn = lerLong(scanner, "Digite o ISBN do livro: ");
+
         System.out.print("Digite o título do livro: ");
         String titulo = scanner.nextLine();
-        
+
         System.out.print("Digite o autor do livro: ");
         String autor = scanner.nextLine();
-        
-        Livro novoLivro = new Livro(isbn, titulo, autor);
+
+        System.out.print("Digite a área do livro: ");
+        String area = scanner.nextLine();
+
+        int quantidadeDisponivel = lerInteiro(scanner, "Digite a quantidade disponível: ");
+
+        Livro novoLivro = new Livro(isbn, titulo, autor, area, quantidadeDisponivel);
         biblioteca.inserir(novoLivro);
-        System.out.println("✓ Livro cadastrado com sucesso!");
+        System.out.println("Livro cadastrado com sucesso!");
     }
-    
+
     private static void removerLivro(Scanner scanner, Arvore_livros biblioteca) {
         System.out.println("\n--- REMOVER LIVRO ---");
-        
+
         if (biblioteca.raiz == null) {
             System.out.println("A biblioteca está vazia. Nenhum livro para remover.");
             return;
         }
-        
-        System.out.print("Digite o ISBN do livro que deseja remover: ");
-        int isbn = scanner.nextInt();
-        scanner.nextLine();
-        
+
+        long isbn = lerLong(scanner, "Digite o ISBN do livro que deseja remover: ");
+
+        Livro livroEncontrado = biblioteca.buscarLivro(isbn);
+
+        if (livroEncontrado == null) {
+            System.out.println("Livro não encontrado.");
+            return;
+        }
+
         biblioteca.removerLivro(isbn);
+        System.out.println("Livro removido com sucesso!");
     }
-    
+
     private static void buscarLivroPorISBN(Scanner scanner, Arvore_livros biblioteca) {
         System.out.println("\n--- BUSCAR LIVRO ---");
-        
+
         if (biblioteca.raiz == null) {
             System.out.println("A biblioteca está vazia.");
             return;
         }
-        
-        System.out.print("Digite o ISBN do livro que deseja buscar: ");
-        int isbn = scanner.nextInt();
-        scanner.nextLine();
-        
-        Livro livroEncontrado = FuncoesBiblioteca.buscarLivro(biblioteca, isbn);
-        
+
+        long isbn = lerLong(scanner, "Digite o ISBN do livro que deseja buscar: ");
+
+        Livro livroEncontrado = biblioteca.buscarLivro(isbn);
+
         if (livroEncontrado != null) {
-            System.out.println("\n✓ Livro encontrado:");
-            System.out.println("  " + livroEncontrado);
+            System.out.println("\nLivro encontrado:");
+            System.out.println(" " + livroEncontrado);
         } else {
-            System.out.println("\n✗ Livro com ISBN " + isbn + " não encontrado na biblioteca.");
+            System.out.println("\nLivro com ISBN " + isbn + " não encontrado na biblioteca.");
+        }
+    }
+
+    private static int lerInteiro(Scanner scanner, String mensagem) {
+        while (true) {
+            System.out.print(mensagem);
+            if (scanner.hasNextInt()) {
+                int valor = scanner.nextInt();
+                scanner.nextLine();
+                return valor;
+            }
+            System.out.println("Entrada inválida. Digite um número inteiro.");
+            scanner.nextLine();
+        }
+    }
+
+    private static long lerLong(Scanner scanner, String mensagem) {
+        while (true) {
+            System.out.print(mensagem);
+            if (scanner.hasNextLong()) {
+                long valor = scanner.nextLong();
+                scanner.nextLine();
+                return valor;
+            }
+            System.out.println("Entrada inválida. Digite um número válido.");
+            scanner.nextLine();
         }
     }
 }

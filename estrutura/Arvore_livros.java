@@ -20,11 +20,38 @@ public class Arvore_livros {
             noAtual.esq = inserirRecursivo(noAtual.esq, novoLivro);
         } else if (novoLivro.id > noAtual.livro.id) {
             noAtual.dir = inserirRecursivo(noAtual.dir, novoLivro);
-        }else {
+        } else {
             System.out.println("ISBN ja cadastrado. Nao e permitido duplicatas.");
         }
 
         return noAtual;
+    }
+
+    public Livro buscarLivro(long id) {
+        return buscarLivroRecursivo(raiz, id);
+    }
+
+    private Livro buscarLivroRecursivo(No noAtual, long id) {
+        if (noAtual == null) {
+            return null;
+        }
+
+        if (id == noAtual.livro.id) {
+            return noAtual.livro;
+        }
+
+        if (id < noAtual.livro.id) {
+            return buscarLivroRecursivo(noAtual.esq, id);
+        }
+
+        return buscarLivroRecursivo(noAtual.dir, id);
+    }
+
+    private void emOrdem(No atual) {
+        if (atual == null) return;
+        emOrdem(atual.esq);
+        System.out.println(" " + atual.livro);
+        emOrdem(atual.dir);
     }
 
     public void exibirEmOrdem() {
@@ -37,26 +64,20 @@ public class Arvore_livros {
         System.out.println();
     }
 
-    private void emOrdem(No atual) {
-        if (atual == null) return;
-        emOrdem(atual.esq);
-        System.out.println("  " + atual.livro);
-        emOrdem(atual.dir);
-    }
-
     public void exibirPreOrdem() {
         System.out.println("\n--- Livros em Pre-Ordem (Pre-Order) ---");
         if (raiz == null) {
             System.out.println("Arvore vazia.");
             return;
         }
+
         preOrdem(raiz);
         System.out.println();
     }
 
     private void preOrdem(No atual) {
         if (atual == null) return;
-        System.out.println("  " + atual.livro);
+        System.out.println(" " + atual.livro);
         preOrdem(atual.esq);
         preOrdem(atual.dir);
     }
@@ -67,6 +88,7 @@ public class Arvore_livros {
             System.out.println("Arvore vazia.");
             return;
         }
+
         posOrdem(raiz);
         System.out.println();
     }
@@ -75,16 +97,15 @@ public class Arvore_livros {
         if (atual == null) return;
         posOrdem(atual.esq);
         posOrdem(atual.dir);
-        System.out.println("  " + atual.livro);
+        System.out.println(" " + atual.livro);
     }
-
-   
 
     public void mostrarMaiorISBN() {
         if (raiz == null) {
             System.out.println("Arvore vazia.");
             return;
         }
+
         No maior = encontrarMaior(raiz);
         System.out.println("Livro com maior ISBN: " + maior.livro);
     }
@@ -94,6 +115,7 @@ public class Arvore_livros {
             System.out.println("Arvore vazia.");
             return;
         }
+
         No menor = encontrarMenor(raiz);
         System.out.println("Livro com menor ISBN: " + menor.livro);
     }
@@ -104,7 +126,9 @@ public class Arvore_livros {
     }
 
     private int contarNos(No atual) {
-        if (atual == null) return 0;
+        if (atual == null) {
+            return 0;
+        }
         return 1 + contarNos(atual.esq) + contarNos(atual.dir);
     }
 
@@ -114,33 +138,46 @@ public class Arvore_livros {
     }
 
     private int calcularAltura(No atual) {
-        if (atual == null) return -1; 
+        if (atual == null) {
+            return -1;
+        }
+
         int altEsq = calcularAltura(atual.esq);
         int altDir = calcularAltura(atual.dir);
+
         return 1 + Math.max(altEsq, altDir);
     }
 
     private No encontrarMenor(No atual) {
-        while (atual.esq != null) {
-            atual = atual.esq;
+        if (atual == null) {
+            return null;
         }
-        return atual;
+
+        if (atual.esq == null) {
+            return atual;
+        }
+
+        return encontrarMenor(atual.esq);
     }
 
     private No encontrarMaior(No atual) {
-        while (atual.dir != null) {
-            atual = atual.dir;
+        if (atual == null) {
+            return null;
         }
-        return atual;
+
+        if (atual.dir == null) {
+            return atual;
+        }
+
+        return encontrarMaior(atual.dir);
     }
 
-    public void removerLivro(int id) {
+    public void removerLivro(long id) {
         this.raiz = removerRecursivo(this.raiz, id);
     }
 
-    private No removerRecursivo(No noAtual, int id) {
+    private No removerRecursivo(No noAtual, long id) {
         if (noAtual == null) {
-            System.out.println("Livro nao encontrado.");
             return null;
         }
 
@@ -166,12 +203,28 @@ public class Arvore_livros {
             return noAtual.esq;
         }
 
-        No sucessor = encontrarMenor(noAtual.dir);
-        assert sucessor != null;
-        noAtual.livro = sucessor.livro;
-        noAtual.dir = removerRecursivo(noAtual.dir, sucessor.livro.id);
+        No predecessor = encontrarMaior(noAtual.esq);
+        noAtual.livro = predecessor.livro;
+        noAtual.esq = removerRecursivo(noAtual.esq, predecessor.livro.id);
 
         return noAtual;
     }
 
+    public void popularBiblioteca(Arvore_livros biblioteca) {
+        biblioteca.inserir(new Livro(50, "Java Básico", "Ana", "Programação", 3));
+        biblioteca.inserir(new Livro(30, "Estruturas de Dados", "Carlos", "Computação", 5));
+        biblioteca.inserir(new Livro(70, "Banco de Dados", "Marina", "Tecnologia", 2));
+        biblioteca.inserir(new Livro(20, "Algoritmos", "Pedro", "Computação", 4));
+        biblioteca.inserir(new Livro(40, "POO", "Julia", "Programação", 6));
+        biblioteca.inserir(new Livro(60, "Redes de Computadores", "Lucas", "Infraestrutura", 1));
+        biblioteca.inserir(new Livro(80, "Segurança da Informação", "Fernanda", "Segurança", 7));
+        biblioteca.inserir(new Livro(10, "Cálculo I", "Roberto", "Matemática", 8));
+        biblioteca.inserir(new Livro(25, "Física Geral", "Helena", "Física", 2));
+        biblioteca.inserir(new Livro(35, "Sistemas Operacionais", "Ricardo", "Computação", 3));
+        biblioteca.inserir(new Livro(45, "Engenharia de Software", "Patrícia", "Software", 4));
+        biblioteca.inserir(new Livro(55, "Inteligência Artificial", "Bianca", "IA", 5));
+        biblioteca.inserir(new Livro(65, "Compiladores", "Sérgio", "Computação", 2));
+        biblioteca.inserir(new Livro(75, "Machine Learning", "Camila", "IA", 6));
+        biblioteca.inserir(new Livro(85, "Cloud Computing", "Rafael", "Infraestrutura", 3));
+    }
 }
